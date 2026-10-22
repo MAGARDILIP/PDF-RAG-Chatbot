@@ -1,0 +1,164 @@
+I
+ Thought Building a RAG Chatbot Was Easy. Then I Started Working With Real PDFs.
+
+
+A few months ago, if someone had asked me how to build a RAG chatbot over PDFs, my answer would have been pretty straightforward:
+
+Extract text
+Create embeddings
+Store them in a vector database
+Retrieve relevant chunks
+Let an LLM answer questions
+
+Simple, right?
+
+Then I started working with actual documents.
+
+Not clean PDFs from tutorials. Real documents.
+
+Some pages were scanned images. Some contained large tables. Others had diagrams, charts, title blocks, headers, footers, and layouts that completely confused normal text extractors.
+
+That's when I realized that RAG is not really a retrieval problem.
+
+It's a document understanding problem.
+
+What Worked For Me During Document Extraction
+I experimented with multiple tools for extracting content from PDFs.
+
+PyMuPDF — 9/10
+This became one of my favorites.
+
+It is fast, lightweight, and gives good control over text, page information, coordinates, and metadata.
+
+For documents that already contain machine-readable text, PyMuPDF handled most cases surprisingly well.
+
+pdfplumber — 8/10
+I found pdfplumber particularly useful when I needed more control over layout information and table extraction.
+
+The output is usually cleaner than many basic PDF readers, although it can become slower on larger files.
+
+Unstructured — 8.5/10
+I liked the fact that it tries to understand document structure rather than simply extracting text.
+
+For RAG pipelines, preserving headings and sections can be extremely valuable.
+
+The tradeoff is that it adds some complexity compared to simpler extraction libraries.
+
+OCR: When PDFs Aren't Really PDFs
+One thing that surprised me was how many PDFs are actually just images.
+
+Text extraction completely fails in those cases.
+
+Tesseract OCR — 7.5/10
+A great free option.
+
+Works well for clean scans.
+
+Accuracy starts dropping when documents contain low-quality scans, stamps, handwritten notes, or complex layouts.
+
+AWS Textract — 9/10
+Much better at handling real-world business documents.
+
+I was impressed by its ability to understand forms and tables.
+
+The downside is cost when processing large volumes of documents.
+
+Google Document AI — 9/10
+Probably one of the most complete document understanding solutions I explored.
+
+Strong OCR performance and excellent handling of structured documents.
+
+Again, cost becomes a factor at scale.
+
+Tables Were Harder Than I Expected
+Tables turned out to be one of the biggest challenges.
+
+Converting a table into plain text often destroys the relationships between rows and columns.
+
+Camelot — 8.5/10
+Worked surprisingly well on clean, digitally generated PDFs.
+
+For structured reports, it saved a lot of effort.
+
+Tabula — 7.5/10
+Easy to use and useful for quick extraction.
+
+I found Camelot slightly more reliable in many cases.
+
+Document AI / Textract Tables — 9/10
+When tables became complex, cloud-based document AI tools generally performed much better than traditional extraction libraries.
+
+Understanding Charts and Images
+Another thing most RAG tutorials ignore is charts.
+
+A graph can contain critical information, yet traditional pipelines completely skip it.
+
+I experimented with multimodal models to generate descriptions and extract insights from charts.
+
+GPT-4o — 9/10
+Strong reasoning and good at describing charts and diagrams.
+
+Gemini — 8.5/10
+Very capable for visual understanding tasks and document analysis.
+
+Claude Vision — 8.5/10
+I liked the quality of explanations, especially for complex visuals.
+
+One lesson I learned here:
+
+A chart should not only be summarized.
+
+If possible, extract actual values, labels, and trends so they become searchable later.
+
+Embeddings and Vector Databases
+For embeddings, I explored:
+
+OpenAI Embeddings
+BGE
+E5
+
+My experience was that chunk quality often mattered more than the embedding model itself.
+
+A great embedding model cannot fix poorly structured chunks.
+
+For storage, I looked at:
+
+Pinecone
+Weaviate
+ChromaDB
+
+ChromaDB — 9/10
+Very easy to get started with.
+
+Perfect for experiments and local development.
+
+Pinecone — 9/10
+Great managed experience and scales well.
+
+Weaviate — 8.5/10
+Powerful and flexible, especially for larger deployments.
+
+The Biggest Lesson
+The biggest mistake I made initially was focusing too much on embeddings and vector databases.
+
+After working with real documents, I realized that most retrieval problems actually start much earlier in the pipeline.
+
+If OCR is poor, retrieval suffers.
+
+If tables are flattened into text, retrieval suffers.
+
+If charts are ignored, retrieval suffers.
+
+If chunking breaks context, retrieval suffers.
+
+By the time the query reaches the vector database, many mistakes have already been made.
+
+Today, if someone asks me how to improve a RAG system, my first question is no longer:
+
+"What embedding model are you using?"
+
+It's:
+
+"How are you processing your documents?"
+
+Because that's usually where the real gains come from.

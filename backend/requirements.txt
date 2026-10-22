@@ -1,0 +1,24 @@
+# === Web Framework ===
+fastapi
+uvicorn[standard]
+
+# === RAG Pipeline ===
+langchain
+langchain-community
+pypdf
+pdfplumber
+
+# === Embeddings & Reranker (run locally on CPU) ===
+sentence-transformers
+
+# === Vector Database ===
+chromadb
+
+# === LLM API ===
+groq
+
+# === Environment Variables ===
+python-dotenv
+
+# === HTTP Requests (for Google OAuth) ===
+requests
