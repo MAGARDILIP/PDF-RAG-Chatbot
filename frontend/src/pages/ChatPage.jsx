@@ -1,14 +1,39 @@
 import { useState, useRef, useEffect } from "react";
-import { IoSend } from "react-icons/io5";
+import { IoSend, IoTrashOutline } from "react-icons/io5";
 import ChatMessage from "../components/ChatMessage";
 import { sendQuestion } from "../api/api";
 
 function ChatPage() {
-  const [messages, setMessages] = useState([]);
+  // Restore messages from sessionStorage so they survive page navigation
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem("rag_chat_messages");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Auto-save messages to sessionStorage whenever they change
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("rag_chat_messages", JSON.stringify(messages));
+    } catch (e) {
+      console.error("Failed to save chat to sessionStorage:", e);
+    }
+  }, [messages]);
+
+  // Clear chat messages
+  function handleClearChat() {
+    setMessages([]);
+    try {
+      sessionStorage.removeItem("rag_chat_messages");
+    } catch (e) {}
+  }
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -69,11 +94,23 @@ function ChatPage() {
   return (
     <div className="flex flex-col h-full bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4">
-        <h2 className="text-lg font-semibold text-gray-800">💬 Ask a Question</h2>
-        <p className="text-xs text-gray-500">
-          Ask questions about uploaded department documents
-        </p>
+      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-800">💬 Ask a Question</h2>
+          <p className="text-xs text-gray-500">
+            Ask questions about uploaded department documents
+          </p>
+        </div>
+        {messages.length > 0 && (
+          <button
+            onClick={handleClearChat}
+            className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-red-600 px-3 py-1.5 rounded-lg border border-gray-200 hover:border-red-200 hover:bg-red-50 transition-colors"
+            title="Clear current chat"
+          >
+            <IoTrashOutline size={14} />
+            <span>Clear Chat</span>
+          </button>
+        )}
       </div>
 
       {/* Messages Area */}
@@ -96,7 +133,7 @@ function ChatPage() {
                 <p className="text-xs text-gray-400 font-medium">Try asking:</p>
                 {[
                   "What are the admission requirements?",
-                  "What is the syllabus for semester 3?",
+                  "How many total credits are required to complete the MCA programme?",
                   "What are the exam guidelines?",
                 ].map((q, i) => (
                   <button

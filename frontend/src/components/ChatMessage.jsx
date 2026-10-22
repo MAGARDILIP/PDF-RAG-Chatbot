@@ -1,5 +1,6 @@
 import { IoPersonCircle, IoSparkles } from "react-icons/io5";
 import SourceCard from "./SourceCard";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 // Individual chat message bubble (user or bot)
 function ChatMessage({ message }) {
@@ -15,7 +16,7 @@ function ChatMessage({ message }) {
       )}
 
       {/* Message content */}
-      <div className={`max-w-[75%] ${isUser ? "order-1" : ""}`}>
+      <div className={`${isUser ? "max-w-[75%] order-1" : "max-w-[85%]"}`}>
         <div
           className={`px-4 py-3 rounded-2xl text-sm leading-relaxed ${
             isUser
@@ -23,12 +24,8 @@ function ChatMessage({ message }) {
               : "bg-white text-gray-800 border border-gray-200 rounded-bl-md shadow-sm"
           }`}
         >
-          {/* Render the message text with line breaks */}
-          {message.content.split("\n").map((line, i) => (
-            <p key={i} className={i > 0 ? "mt-2" : ""}>
-              {line}
-            </p>
-          ))}
+          {/* Render formatted message (Markdown tables, bold, lists, italics) */}
+          <MarkdownRenderer content={message.content} isUser={isUser} />
         </div>
 
         {/* Source citations (only for bot messages that have sources) */}

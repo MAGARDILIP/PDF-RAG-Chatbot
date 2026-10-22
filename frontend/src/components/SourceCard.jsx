@@ -19,7 +19,16 @@ function SourceCard({ source }) {
         </p>
         {source.snippet && (
           <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-            {source.snippet}
+            {source.snippet.startsWith("[TABLE DATA]") ? (
+              <span>
+                <span className="inline-block bg-primary-100 text-primary-700 text-[10px] font-semibold px-1.5 py-0.2 rounded mr-1">
+                  Table
+                </span>
+                {source.snippet.replace(/^\[TABLE DATA\]\s*/, "").replace(/\s*\|\s*/g, " · ")}
+              </span>
+            ) : (
+              source.snippet
+            )}
           </p>
         )}
       </div>
